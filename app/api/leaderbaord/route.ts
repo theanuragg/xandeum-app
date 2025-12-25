@@ -2,7 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prpcClient } from '@/lib/prpc-client';
 import { cache } from '@/lib/cache';
 import { validateAPIKey } from '@/lib/api-auth';
-import { env } from '@/lib/env';
+
+// Ensure BigInt serialization is enabled
+import '@/lib/bigint-json';
+
+/**
+ * Serialize PNode for JSON response
+ */
+function serializePNode(node: any) {
+  return {
+    ...node,
+    storageUsed: node.storageUsed.toString(),
+    storageCapacity: node.storageCapacity.toString(),
+    memoryUsed: node.memoryUsed.toString(),
+    memoryTotal: node.memoryTotal.toString(),
+  };
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,16 +34,28 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const sortBy = searchParams.get('sortBy') || 'xdnScore';
 
-    const cacheKey = `leaderboard:${sortBy}: ${limit}`;
+    const cacheKey = `leaderboard:${sortBy}:${limit}`;
 
     // Try cache first
     const cachedLeaderboard = await cache.get(cacheKey);
     if (cachedLeaderboard) {
+      console.log(`Cache hit for leaderboard: ${cacheKey}`);
       return NextResponse.json(cachedLeaderboard);
     }
 
+    console.log('Cache miss, fetching leaderboard from pRPC...');
+
     // Fetch all pNodes
     const pnodes = await prpcClient.getPNodes({ limit: 1000 });
+
+    if (pnodes.length === 0) {
+      return NextResponse.json({
+        leaderboard: [],
+        count: 0,
+        sortedBy: sortBy,
+        timestamp: Date.now(),
+      });
+    }
 
     // Sort based on parameter
     const sorted = pnodes.sort((a, b) => {
@@ -41,33 +68,51 @@ export async function GET(request: NextRequest) {
           return b.rewards - a.rewards;
         case 'stake':
           return b.stake - a.stake;
+        case 'performance':
+          return b.performance - a.performance;
         case 'xdnScore':
         default:
           return b.xdnScore - a.xdnScore;
       }
     });
 
+    // Take top N and add rank
     const leaderboard = sorted.slice(0, limit).map((node, index) => ({
       rank: index + 1,
-      ... node,
+      ...serializePNode(node),
     }));
 
     const response = {
       leaderboard,
       count: leaderboard.length,
-      sortedBy:  sortBy,
+      sortedBy: sortBy,
       timestamp: Date.now(),
     };
 
     // Cache the results
-    await cache.set(cacheKey, response, env.PNODE_CACHE_TTL);
+    const PNODE_CACHE_TTL = process.env.PNODE_CACHE_TTL 
+      ? parseInt(process.env.PNODE_CACHE_TTL, 10) 
+      : 300;
+    
+    try {
+      await cache.set(cacheKey, response, PNODE_CACHE_TTL);
+      console.log(`Cached leaderboard (${leaderboard.length} nodes) for ${PNODE_CACHE_TTL}s`);
+    } catch (cacheError) {
+      console.error('Failed to cache leaderboard:', cacheError);
+      // Continue even if caching fails
+    }
 
     return NextResponse.json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Leaderboard error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status:  500 }
+      { 
+        error: 'Internal server error',
+        message: error?.message || 'Unknown error',
+        leaderboard: [],
+        count: 0,
+      },
+      { status: 500 }
     );
   }
 }
