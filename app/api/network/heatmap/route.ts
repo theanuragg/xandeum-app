@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prpcClient } from '@/lib/prpc-client';
 import { cache } from '@/lib/cache';
 import { validateAPIKey } from '@/lib/api-auth';
-import { env } from '@/lib/env';
 
 interface GeoData {
   country: string;
@@ -86,8 +85,11 @@ export async function GET(request: NextRequest) {
       timestamp: Date.now(),
     };
 
-    // Cache the results
-    await cache.set(cacheKey, response, env. PNODE_CACHE_TTL);
+    // Cache the results (default 300 seconds if not set)
+    const PNODE_CACHE_TTL = process.env.PNODE_CACHE_TTL 
+      ? parseInt(process.env.PNODE_CACHE_TTL, 10) 
+      : 300;
+    await cache.set(cacheKey, response, PNODE_CACHE_TTL);
 
     return NextResponse.json(response);
   } catch (error) {
