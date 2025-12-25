@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^7.2.0",
     "@redis/client": "^5.10.0",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",
@@ -60,6 +61,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.181.2",
     "vaul": "^1.1.2",
+    "xandeum-prpc": "^0.1.6",
     "zod": "3.25.76"
   },
   "devDependencies": {
