@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/prisma';
 import { cache } from '@/lib/cache';
 import { prpcClient } from '@/lib/prpc-client';
 import { validateAPIKey, checkRateLimit } from '@/lib/api-auth';
-import { env } from '@/lib/env';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,9 +15,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Check rate limit
-    const rateLimited = !(await checkRateLimit(auth. key! ));
+    const rateLimitKey = auth.apiKey || request.headers.get('x-forwarded-for') || 'unknown';
+    const rateLimited = !(await checkRateLimit(rateLimitKey));
     if (rateLimited) {
-      return NextResponse. json(
+      return NextResponse.json(
         { error: 'Rate limit exceeded' },
         { status: 429 }
       );
@@ -63,8 +62,11 @@ export async function GET(request: NextRequest) {
       timestamp: Date.now(),
     };
 
-    // Cache the results
-    await cache.set(cacheKey, stats, env. STATS_CACHE_TTL);
+    // Cache the results (default 300 seconds if not set)
+    const STATS_CACHE_TTL = process.env.STATS_CACHE_TTL 
+      ? parseInt(process.env.STATS_CACHE_TTL, 10) 
+      : 300;
+    await cache.set(cacheKey, stats, STATS_CACHE_TTL);
 
     return NextResponse.json(stats);
   } catch (error) {
