@@ -1,5 +1,4 @@
 import { createClient } from '@redis/client';
-import { env } from './env';
 
 let redis: ReturnType<typeof createClient> | null = null;
 
@@ -9,8 +8,8 @@ export async function getRedisClient() {
   }
 
   redis = createClient({
-    url: env.REDIS_URL,
-    password: env. REDIS_PASSWORD || undefined,
+    url: process.env.REDIS_URL,
+    password: process.env.REDIS_PASSWORD,
     socket: {
       reconnectStrategy: (retries) => Math.min(retries * 50, 500),
     },
