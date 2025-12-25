@@ -13,15 +13,164 @@ datasource db {
   provider = "postgresql"
 }
 
-model Node {
-  id        Int      @id @default(autoincrement())
-  externalId String? @unique 
-  name      String?
-  country   String?
-  city      String?
-  latitude  Float
-  longitude Float
-  metadata      Json?    
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model PNode {
+  id                    String    @id @default(cuid())
+  externalId            String    @unique // ID from pRPC
+  name                  String
+  status                String    // active, inactive, warning
+  uptime                Float
+  latency               Int       // milliseconds
+  validations           Int
+  rewards               Float
+  location              String
+  region                String
+  lat                   Float
+  lng                   Float
+  storageUsed           BigInt    // bytes
+  storageCapacity       BigInt    // bytes
+  lastSeen              DateTime  @default(now())
+  performance           Float
+  stake                 Float
+  riskScore             Float
+  xdnScore              Float     // Xandeum Node Score
+  registered            Boolean
+  isPublic              Boolean
+  rpcPort               Int
+  version               String? 
+  storageUsagePercent   Float
+  cpuPercent            Float
+  memoryUsed            BigInt
+  memoryTotal           BigInt
+  packetsIn             Int
+  packetsOut            Int
+  
+  // Relations
+  metrics               PNodeMetric[]
+  history               PNodeHistory[]
+  peers                 PNodePeer[]
+  alerts                Alert[]
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@index([status])
+  @@index([xdnScore])
+  @@index([region])
+  @@index([lastSeen])
+}
+
+// PNodeMetric Model - Store detailed metrics
+model PNodeMetric {
+  id                    String    @id @default(cuid())
+  pnodeId               String
+  pnode                 PNode     @relation(fields: [pnodeId], references: [id], onDelete:  Cascade)
+  
+  cpuUsagePercent       Float
+  memoryUsagePercent    Float
+  networkLatency        Int
+  bandwidthUsed         BigInt
+  diskReadOps           Int
+  diskWriteOps          Int
+  
+  createdAt             DateTime  @default(now())
+  
+  @@index([pnodeId])
+  @@index([createdAt])
+}
+
+// PNodeHistory Model - Historical metrics tracking
+model PNodeHistory {
+  id                    String    @id @default(cuid())
+  pnodeId               String
+  pnode                 PNode     @relation(fields: [pnodeId], references: [id], onDelete: Cascade)
+  
+  timestamp             DateTime
+  latency               Int
+  uptime                Float
+  storageUsed           BigInt
+  rewards               Float
+  
+  createdAt             DateTime  @default(now())
+  
+  @@index([pnodeId])
+  @@index([timestamp])
+}
+
+// PNodePeer Model - Track node peers/connections
+model PNodePeer {
+  id                    String    @id @default(cuid())
+  pnodeId               String
+  pnode                 PNode     @relation(fields: [pnodeId], references: [id], onDelete: Cascade)
+  
+  peerId                String
+  peerName              String
+  lastConnected         DateTime
+  connectionQuality     Int
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@unique([pnodeId, peerId])
+  @@index([pnodeId])
+}
+
+// Alert Model - Store node alerts
+model Alert {
+  id                    String    @id @default(cuid())
+  pnodeId               String
+  pnode                 PNode     @relation(fields: [pnodeId], references: [id], onDelete:  Cascade)
+  
+  severity              String    // critical, warning, info
+  message               String
+  type                  String    // uptime, latency, storage, etc
+  isResolved            Boolean   @default(false)
+  
+  createdAt             DateTime  @default(now())
+  resolvedAt            DateTime?
+  
+  @@index([pnodeId])
+  @@index([severity])
+  @@index([isResolved])
+}
+
+// NetworkSnapshot Model - Daily network statistics
+model NetworkSnapshot {
+  id                    String    @id @default(cuid())
+  
+  totalNodes            Int
+  activeNodes           Int
+  networkHealth         Float
+  totalRewards          Float
+  averageLatency        Float
+  validationRate        Float
+  
+  snapshotDate          DateTime  @unique
+  createdAt             DateTime  @default(now())
+}
+
+// API Usage Log Model - Track API usage
+model APIUsageLog {
+  id                    String    @id @default(cuid())
+  apiKey                String     
+  endpoint              String
+  method                String
+  statusCode            Int
+  responseTimeMs        Int
+  
+  createdAt             DateTime  @default(now())
+  
+  @@index([apiKey])
+  @@index([createdAt])
+}
+
+// Cache Invalidation Model
+model CacheInvalidation {
+  id                    String    @id @default(cuid())
+  key                   String    @unique
+  pattern               String?    // For pattern-based invalidation
+  
+  createdAt             DateTime  @default(now())
+  expiresAt             DateTime
+  
+  @@index([expiresAt])
 }
