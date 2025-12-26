@@ -243,11 +243,23 @@ export class PRPCClient {
         // Get geolocation
         let geolocation = null;
         try {
-          if (pod.address && /^\d+\.\d+\.\d+\.\d+$/.test(pod.address)) {
+          if (pod.address) {
             geolocation = await getGeolocation(pod.address);
           }
         } catch (error) {
-          // Geolocation is optional
+          // Geolocation is optional, will fallback to Unknown
+        }
+
+        // Provide fallback location data if geolocation failed
+        if (!geolocation || geolocation.country === 'Unknown') {
+          geolocation = {
+            country: 'Unknown',
+            region: 'Unknown',
+            city: 'Unknown',
+            latitude: 0,
+            longitude: 0,
+            timezone: 'UTC'
+          };
         }
         
         const riskScore = this.calculateRiskScore(nodeData);
@@ -258,6 +270,9 @@ export class PRPCClient {
           riskScore
         );
 
+        const location = (geolocation?.country && geolocation.country !== 'Unknown' && geolocation.country !== null) ? geolocation.country : 'Unknown';
+        const region = (geolocation?.region && geolocation.region !== 'Unknown' && geolocation.region !== null) ? geolocation.region : 'Unknown';
+
         return {
           id: nodeData.id,
           externalId: nodeData.id,
@@ -267,8 +282,8 @@ export class PRPCClient {
           latency: nodeData.latency,
           validations: 0,
           rewards: nodeData.rewards,
-          location: geolocation?.country || 'Unknown',
-          region: geolocation?.region || 'Unknown',
+          location,
+          region,
           lat: geolocation?.latitude || 0,
           lng: geolocation?.longitude || 0,
           storageUsed: BigInt(nodeData.storageUsed),
@@ -313,96 +328,15 @@ export class PRPCClient {
    */
   async getPNodeById(id: string): Promise<PNode | null> {
     try {
-      const pod = await PrpcClient.findPNode(id, {
-        replaceSeeds: this.seedIPs,
-        timeout: this.timeout,
-      });
+      // Fetch all pNodes and filter for the specific ID
+      // This is a workaround since PrpcClient.findPNode may not work correctly
+      const allPNodes = await this.getPNodes();
+      const pnode = allPNodes.find(node => node.externalId === id);
 
-      if (!pod || !pod.pubkey) return null;
+      if (!pnode) return null;
 
-      // Get node stats if address is available
-      let nodeStats: NodeStats | null = null;
-      try {
-        if (pod.address) {
-          const client = new PrpcClient(pod.address, { timeout: this.timeout });
-          nodeStats = await client.getStats();
-        }
-      } catch (error) {
-        // Stats not available
-      }
-
-      const nodeData: PRPCPNodeData = {
-        id: pod.pubkey,
-        name: pod.pubkey.substring(0, 8) + '...',
-        status: pod.uptime && pod.uptime > 0 ? 'active' : 'inactive',
-        uptime: pod.uptime || 0,
-        latency: 0,
-        stake: 0,
-        rewards: 0,
-        isPublic: pod.is_public || false,
-        rpcPort: pod.rpc_port || 6000,
-        version: pod.version || 'unknown',
-        cpuPercent: nodeStats?.cpu_percent || 0,
-        memoryUsed: nodeStats?.ram_used || 0,
-        memoryTotal: nodeStats?.ram_total || 0,
-        packetsIn: nodeStats?.packets_received || 0,
-        packetsOut: nodeStats?.packets_sent || 0,
-        storageUsed: pod.storage_used || 0,
-        storageCapacity: pod.storage_committed || pod.storage_used || 0,
-      };
-
-      let geolocation = null;
-      try {
-        if (pod.address && /^\d+\.\d+\.\d+\.\d+$/.test(pod.address)) {
-          geolocation = await getGeolocation(pod.address);
-        }
-      } catch (error) {
-        // Geolocation is optional
-      }
-      
-      const riskScore = this.calculateRiskScore(nodeData);
-      const xdnScore = calculateXDNScore(
-        nodeData.stake,
-        nodeData.uptime,
-        nodeData.latency,
-        riskScore
-      );
-
-      return {
-        id: nodeData.id,
-        externalId: nodeData.id,
-        name: nodeData.name,
-        status: nodeData.status,
-        uptime: nodeData.uptime,
-        latency: nodeData.latency,
-        validations: 0,
-        rewards: nodeData.rewards,
-        location: geolocation?.country || 'Unknown',
-        region: geolocation?.region || 'Unknown',
-        lat: geolocation?.latitude || 0,
-        lng: geolocation?.longitude || 0,
-        storageUsed: BigInt(nodeData.storageUsed),
-        storageCapacity: BigInt(nodeData.storageCapacity),
-        lastSeen: new Date(pod.last_seen_timestamp * 1000 || Date.now()),
-        performance: this.calculatePerformance(nodeData),
-        stake: nodeData.stake,
-        riskScore,
-        xdnScore,
-        registered: true,
-        isPublic: nodeData.isPublic,
-        rpcPort: nodeData.rpcPort,
-        version: nodeData.version,
-        storageUsagePercent: nodeData.storageCapacity > 0 
-          ? (nodeData.storageUsed / nodeData.storageCapacity) * 100 
-          : 0,
-        cpuPercent: nodeData.cpuPercent,
-        memoryUsed: BigInt(nodeData.memoryUsed),
-        memoryTotal: BigInt(nodeData.memoryTotal),
-        packetsIn: nodeData.packetsIn,
-        packetsOut: nodeData.packetsOut,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      // Since we already have the PNode data from getPNodes, return it directly
+      return pnode;
     } catch (error) {
       console.error(`Failed to fetch pNode ${id}:`, error);
       return null;
