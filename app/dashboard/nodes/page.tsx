@@ -37,7 +37,7 @@ export default function NodesPage() {
   })) || [];
 
   // Filter nodes based on search
-  const filteredNodes = nodes.filter(node =>
+  const filteredNodes = nodes.filter((node: any) =>
     node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     node.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
