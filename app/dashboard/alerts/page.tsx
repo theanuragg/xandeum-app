@@ -213,7 +213,7 @@ export default function AlertsPage() {
   const { data: leaderboardData, error, isLoading } = useLeaderboard(50);
 
   // Generate mock alerts based on real node data
-  const generatedAlerts = leaderboardData?.leaderboard?.slice(0, 10).map((node, index) => ({
+  const generatedAlerts = leaderboardData?.leaderboard?.slice(0, 10).map((node: any, index: number) => ({
     id: `alert-${node.id}-${index}`,
     nodeId: node.id,
     nodeName: node.name,
