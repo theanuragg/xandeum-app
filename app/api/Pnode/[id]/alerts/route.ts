@@ -4,35 +4,42 @@ import { validateAPIKey } from '@/lib/api-auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id:  string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate API key
     const auth = await validateAPIKey();
     if (!auth.valid) {
       return NextResponse.json(
-        { error: 'Unauthorized', code:  auth.error },
+        { error: 'Unauthorized', code: auth.error },
         { status: 401 }
       );
     }
 
-    const { id } = params;
+    // Await params to get the id
+    const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
     const includeResolved = searchParams.get('includeResolved') === 'true';
 
     // Fetch alerts with conditional filtering
-    const alerts = await db. alert.findMany({
-      where: {
-        pnodeId: id,
-      },
+    const whereClause: any = {
+      pnodeId: id,
+    };
+
+    // Apply resolved filter if includeResolved is false
+    if (!includeResolved) {
+      whereClause.isResolved = false;
+    }
+
+    const alerts = await db?.alert.findMany({
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json({
       pnodeId: id,
       alerts,
-      count: alerts.length,
-      unresolved: alerts.filter()
+      count: alerts?.length,
     });
   } catch (error) {
     console.error(`Get pNode alerts error:`, error);

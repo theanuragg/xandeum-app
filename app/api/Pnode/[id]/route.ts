@@ -22,7 +22,7 @@ function serializePNode(node: any) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate API key
@@ -34,7 +34,8 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    // Await params to get the id
+    const { id } = await params;
     const cacheKey = `pnode:${id}`;
 
     // Try cache first
@@ -138,7 +139,7 @@ export async function GET(
 
     return NextResponse.json(serializedPNode);
   } catch (error: any) {
-    console.error(`Get pNode ${params.id} error:`, error);
+    console.error(`Get pNode error:`, error);
     return NextResponse.json(
       { 
         error: 'Internal server error',

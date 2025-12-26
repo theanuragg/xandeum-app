@@ -5,7 +5,7 @@ import { validateAPIKey } from '@/lib/api-auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate API key
@@ -17,7 +17,8 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    // Await params to get the id
+    const { id } = await params;
     const cacheKey = `pnode:${id}:metrics`;
 
     // Try cache first
@@ -27,30 +28,25 @@ export async function GET(
     }
 
     // Fetch metrics from database
-    const metrics = await db.pNodeMetric.findMany({
+    const metrics = await db?.pNodeMetric.findMany({
       where: { pnodeId: id },
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
 
-    if (metrics.length === 0) {
-      return NextResponse.json(
-        { error: 'No metrics found for this pNode' },
-        { status: 404 }
-      );
-    }
-
+    const response = {
+      pnodeId: id,
+      metrics,
+      count: metrics?.length,
+    };
+    
     // Cache the results (default 300 seconds if not set)
     const PNODE_CACHE_TTL = process.env.PNODE_CACHE_TTL 
       ? parseInt(process.env.PNODE_CACHE_TTL, 10) 
       : 300;
-    await cache.set(cacheKey, metrics, PNODE_CACHE_TTL);
+    await cache.set(cacheKey, response, PNODE_CACHE_TTL);
 
-    return NextResponse.json({
-      pnodeId: id,
-      metrics,
-      count: metrics.length,
-    });
+    return NextResponse.json(response);
   } catch (error) {
     console.error(`Get pNode metrics error:`, error);
     return NextResponse.json(
