@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   X,
@@ -33,11 +33,13 @@ import type { PNode } from '@/lib/api';
 const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 const NodeSelector = ({
+  nodes,
   selectedNodes,
   onToggleNode,
   searchTerm,
   onSearchChange
 }: {
+  nodes: PNode[];
   selectedNodes: string[];
   onToggleNode: (nodeId: string) => void;
   searchTerm: string;
@@ -65,38 +67,37 @@ const NodeSelector = ({
 
     {/* Node list */}
     <div className="space-y-2 max-h-60 overflow-y-auto">
-      {mockNodes
-        .filter(node => node.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        .map((node) => {
-          const isSelected = selectedNodes.includes(node.id);
-          return (
-            <button
-              key={node.id}
-              onClick={() => onToggleNode(node.id)}
-              disabled={!isSelected && selectedNodes.length >= 5}
-              className={cn(
-                "w-full flex items-center justify-between p-3 rounded-lg border transition-colors",
-                isSelected
-                  ? "bg-blue-600/20 border-blue-600 text-white"
-                  : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700",
-                !isSelected && selectedNodes.length >= 5 && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">
-                    {node.name.slice(0, 2).toUpperCase()}
-                  </span>
-                </div>
-                <div className="text-left">
-                  <div className="text-sm font-medium">{node.name}</div>
-                  <div className="text-xs text-gray-400">Score: {node.score}</div>
-                </div>
-              </div>
-              {isSelected && <Check className="h-4 w-4 text-blue-400" />}
-            </button>
-          );
-        })}
+      {Array.isArray(selectedNodes) && typeof onToggleNode === 'function'
+        ? nodes
+            .filter(node => node.name.toLowerCase().includes(searchTerm.toLowerCase()))
+            .map((node) => {
+              const isSelected = selectedNodes.includes(node.id);
+              return (
+                <button
+                  key={node.id}
+                  onClick={() => onToggleNode(node.id)}
+                  className={cn(
+                    "w-full flex items-center justify-between p-3 rounded-lg transition-colors",
+                    isSelected ? "bg-blue-600" : "bg-gray-700 hover:bg-gray-600"
+                  )}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-white">
+                        {node.name.slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium">{node.name}</div>
+                      <div className="text-xs text-gray-400">Score: {node.xdnScore.toFixed(1)}</div>
+                    </div>
+                  </div>
+                  {isSelected && <Check className="h-4 w-4 text-blue-400" />}
+                </button>
+              );
+            })
+        : null
+      }
     </div>
   </div>
 );
@@ -118,7 +119,7 @@ const ComparisonCard = ({ nodes }: { nodes: any[] }) => (
             </div>
           </div>
           <div className="text-right">
-            <div className="text-white font-bold">{node.score}</div>
+            <div className="text-white font-bold">{node.xdnScore.toFixed(1)}</div>
             <div className="text-sm text-gray-400">Score</div>
           </div>
         </div>
@@ -145,14 +146,14 @@ export default function ComparisonPage() {
     });
   };
 
-  const selectedNodeData = nodes.filter(node => selectedNodes.includes(node.id));
+  const selectedNodeData = nodes.filter((node: PNode) => selectedNodes.includes(node.id));
 
   // Transform data for charts (mock historical data for now)
   const chartData = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000);
     const transformed: any = { date: date.toISOString().split('T')[0] };
 
-    selectedNodeData.forEach((node) => {
+    selectedNodeData.forEach((node: PNode) => {
       // Use current values with some variation for historical data
       transformed[`${node.name}_score`] = Math.max(85, node.xdnScore + (Math.random() - 0.5) * 5);
       transformed[`${node.name}_uptime`] = Math.max(95, node.uptime + (Math.random() - 0.5) * 2);
@@ -193,6 +194,7 @@ export default function ComparisonPage() {
         {/* Node Selector */}
         <div className="lg:col-span-1">
           <NodeSelector
+            nodes={nodes}
             selectedNodes={selectedNodes}
             onToggleNode={handleToggleNode}
             searchTerm={searchTerm}
@@ -238,7 +240,7 @@ export default function ComparisonPage() {
                         }}
                       />
                       <Legend />
-                      {selectedNodeData.map((node, index) => (
+                      {selectedNodeData.map((node: PNode, index: number) => (
                         <Line
                           key={node.id}
                           type="monotone"
@@ -277,7 +279,7 @@ export default function ComparisonPage() {
                         }}
                       />
                       <Legend />
-                      {selectedNodeData.map((node, index) => (
+                      {selectedNodeData.map((node: PNode, index: number) => (
                         <Bar
                           key={node.id}
                           dataKey={`${node.name}_uptime`}
@@ -314,7 +316,7 @@ export default function ComparisonPage() {
                         }}
                       />
                       <Legend />
-                      {selectedNodeData.map((node, index) => (
+                      {selectedNodeData.map((node: PNode, index: number) => (
                         <Line
                           key={node.id}
                           type="monotone"
@@ -345,7 +347,7 @@ export default function ComparisonPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
-                      {selectedNodeData.map((node, index) => {
+                      {selectedNodeData.map((node: PNode, index: number) => {
                         const sevenDayAvg = chartData.reduce((sum, day) => {
                           const score = day[`${node.name}_score`];
                           return sum + (score || 0);
@@ -362,9 +364,9 @@ export default function ComparisonPage() {
                                 <span className="text-white font-medium">{node.name}</span>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-white">{node.score}</td>
-                            <td className="px-4 py-3 text-white">{node.uptime}%</td>
-                            <td className="px-4 py-3 text-white">{node.avgLatency}ms</td>
+                            <td className="px-4 py-3 text-white">{node.xdnScore.toFixed(1)}</td>
+                            <td className="px-4 py-3 text-white">{node.uptime.toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-white">{node.latency}ms</td>
                             <td className="px-4 py-3 text-white">{sevenDayAvg.toFixed(1)}</td>
                           </tr>
                         );
