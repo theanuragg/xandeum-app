@@ -21,26 +21,26 @@ export async function getGeolocation(ip: string): Promise<LocationData | null> {
   }
 
   try {
-    // Use ipapi.co for geolocation (free tier available)
-    const response = await axios.get<any>(`http://ipapi.co/${ip}/json/`);
-    
-    if (response.data. error) {
-      console.warn(`Geolocation error for ${ip}:`, response.data.error);
+    // Use ip-api.com for geolocation (more reliable free tier)
+    const response = await axios.get<any>(`http://ip-api.com/json/${ip}`);
+
+    if (response.data.status === 'fail') {
+      console.warn(`Geolocation failed for ${ip}:`, response.data.message);
       return null;
     }
 
     const locationData: LocationData = {
-      country: response.data.country_name || 'Unknown',
-      region:  response.data.region || 'Unknown',
-      city: response. data.city || 'Unknown',
-      latitude: response.data.latitude || 0,
-      longitude:  response.data.longitude || 0,
+      country: response.data.country || 'Unknown',
+      region: response.data.regionName || 'Unknown',
+      city: response.data.city || 'Unknown',
+      latitude: response.data.lat || 0,
+      longitude: response.data.lon || 0,
       timezone: response.data.timezone || 'UTC',
     };
 
     // Cache the result
     geoCache.set(ip, locationData);
-    
+
     return locationData;
   } catch (error) {
     console.error(`Failed to get geolocation for ${ip}:`, error);
