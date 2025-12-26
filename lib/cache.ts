@@ -1,5 +1,4 @@
 import { getRedisClient } from './redis';
-import { env } from './env';
 
 interface CachedValue<T = any> {
   data: T;
