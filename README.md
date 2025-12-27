@@ -484,41 +484,64 @@ STATS_CACHE_TTL="300"
 - **Executive Dashboards**: High-level business intelligence views
 - **API Analytics**: Usage patterns and performance insights
 
-## 🔮 Future Roadmap
+## 📄 License
 
-### Q1 2025: Advanced Analytics
-- Machine learning-based predictive maintenance
-- Advanced anomaly detection algorithms
-- Custom dashboard builder for power users
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Q2 2025: Enterprise Features
-- Multi-tenant architecture for enterprise deployments
-- Advanced role-based access control
-- Audit trails and compliance reporting
+```
+MIT License
 
-### Q3 2025: Global Expansion
-- Multi-region deployment architecture
-- Localized user interfaces and documentation
-- Regional performance optimization
+Copyright (c) 2025 Xandeum Protocol
 
-### Q4 2025: AI-Powered Operations
-- Automated incident response and remediation
-- Intelligent resource allocation recommendations
-- Predictive network capacity planning
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-## 🤝 Contributing & Development
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-### Code Quality Standards
-- **TypeScript**: Strict type checking enabled
-- **ESLint**: Code quality and consistency enforcement
-- **Prettier**: Automated code formatting
-- **Testing**: 90%+ code coverage requirement
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
-### Development Workflow
-- **Git Flow**: Feature branches with pull request reviews
-- **Code Reviews**: Mandatory peer review for all changes
-- **Automated Testing**: CI/CD pipeline with comprehensive test suite
-- **Documentation**: Auto-generated API documentation and user guides
+## 🤝 Contributing
+
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started.
+
+### Development Setup
+
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/your-username/xandeum.git`
+3. Install dependencies: `pnpm install`
+4. Set up environment variables: `cp .env.example .env.local`
+5. Run database migrations: `npx prisma migrate dev`
+6. Start development server: `pnpm dev`
+
+### Code of Conduct
+
+This project follows a code of conduct to ensure a welcoming environment for all contributors. Please review our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
+
+## 📞 Support & Community
+
+- **Documentation**: [docs.xandeum.org](https://docs.xandeum.org)
+- **Discord**: [Join our community](https://discord.gg/xandeum)
+- **Twitter**: [@xandeum](https://twitter.com/xandeum)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/xandeum/xandeum/issues)
+- **Email**: support@xandeum.org
+
+## 🙏 Acknowledgments
+
+- **Xandeum Protocol Community**: For building and maintaining the distributed network
+- **Open Source Contributors**: For their valuable contributions to the ecosystem
+- **Technology Partners**: For providing the tools and infrastructure that make this possible
 
 ---
 
