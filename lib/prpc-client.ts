@@ -157,6 +157,12 @@ export class PRPCClient {
    */
   async getPNodes(filters: PNodeFilters = {}): Promise<PNode[]> {
     try {
+      // In development, return mock data if PRPC fails
+      if (process.env.NODE_ENV === 'development' && process.env.USE_MOCK_DATA === 'true') {
+        console.log('Using mock PNode data for development');
+        return this.getMockPNodes(filters);
+      }
+
       const allPods: Map<string, Pod> = new Map();
       
       console.log(`Querying ${this.seedIPs.length} seed nodes for pods...`);
@@ -351,6 +357,118 @@ export class PRPCClient {
     const latencyRisk = Math.min(node.latency / 100, 1) * 40;
     const cpuRisk = (node.cpuPercent / 100) * 20;
     return Math.min(uptimeRisk + latencyRisk + cpuRisk, 100);
+  }
+
+  /**
+   * Generate mock PNode data for development when PRPC is unavailable
+   */
+  private async getMockPNodes(filters: PNodeFilters = {}): Promise<PNode[]> {
+    const mockNodes: PRPCPNodeData[] = [
+      {
+        id: 'EcTqXgB6VJStAtBZAXcjLHf5ULj41H1PFZQ17zKosbhL',
+        name: 'EcTqXgB6...',
+        status: 'active',
+        uptime: 918796,
+        latency: 23,
+        stake: 0,
+        rewards: 0,
+        isPublic: true,
+        rpcPort: 6000,
+        version: '0.8.0',
+        cpuPercent: 15,
+        memoryUsed: 2048,
+        memoryTotal: 8192,
+        packetsIn: 1500,
+        packetsOut: 1200,
+        storageUsed: 50591,
+        storageCapacity: 340000000000
+      },
+      {
+        id: 'F5gH8kL9mN2pQ3rS6tV8wX1yZ4aB7cD9eF2gH4iJ6k',
+        name: 'F5gH8kL9...',
+        status: 'active',
+        uptime: 856432,
+        latency: 45,
+        stake: 0,
+        rewards: 0,
+        isPublic: true,
+        rpcPort: 6000,
+        version: '0.8.0',
+        cpuPercent: 22,
+        memoryUsed: 3072,
+        memoryTotal: 8192,
+        packetsIn: 2100,
+        packetsOut: 1800,
+        storageUsed: 72341,
+        storageCapacity: 340000000000
+      },
+      {
+        id: 'A1bC3dE5fG7hI9jK2lM4nO6pQ8rS0tU2vW4xY6zA8',
+        name: 'A1bC3dE5...',
+        status: 'warning',
+        uptime: 723891,
+        latency: 78,
+        stake: 0,
+        rewards: 0,
+        isPublic: true,
+        rpcPort: 6000,
+        version: '0.7.9',
+        cpuPercent: 35,
+        memoryUsed: 4096,
+        memoryTotal: 8192,
+        packetsIn: 800,
+        packetsOut: 650,
+        storageUsed: 45678,
+        storageCapacity: 340000000000
+      }
+    ];
+
+    let filteredNodes = mockNodes;
+
+    // Apply filters
+    if (filters.status) {
+      filteredNodes = filteredNodes.filter(node => node.status === filters.status);
+    }
+
+    // Apply limit
+    if (filters.limit) {
+      filteredNodes = filteredNodes.slice(0, filters.limit);
+    }
+
+    // Transform to PNode format
+    return filteredNodes.map(node => ({
+      id: node.id,
+      externalId: node.id,
+      name: node.name,
+      status: node.status as 'active' | 'inactive' | 'warning',
+      uptime: node.uptime,
+      latency: node.latency,
+      validations: 0,
+      rewards: node.rewards,
+      location: 'Unknown',
+      region: 'Unknown',
+      lat: 0,
+      lng: 0,
+      storageUsed: node.storageUsed.toString(),
+      storageCapacity: node.storageCapacity.toString(),
+      lastSeen: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+      performance: this.calculatePerformanceScore(node),
+      stake: node.stake,
+      riskScore: this.calculateRiskScore(node),
+      xdnScore: this.calculateXDNScore(node.stake, node.uptime, node.latency, this.calculateRiskScore(node)),
+      registered: true,
+      isPublic: node.isPublic,
+      rpcPort: node.rpcPort,
+      version: node.version,
+      storageUsagePercent: (node.storageUsed / node.storageCapacity) * 100,
+      cpuPercent: node.cpuPercent,
+      memoryUsed: node.memoryUsed.toString(),
+      memoryTotal: node.memoryTotal.toString(),
+      packetsIn: node.packetsIn,
+      packetsOut: node.packetsOut,
+      createdAt: new Date(Date.now() - Math.random() * 86400000 * 30).toISOString(),
+      updatedAt: new Date().toISOString()
+    }));
   }
 }
 
