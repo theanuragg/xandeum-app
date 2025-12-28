@@ -27,8 +27,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0A0A0F] text-white min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white min-h-screen relative`}
       >
+        {/* Global Background Image */}
+        <div className="fixed inset-0 bg-[url('https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/db152321-d045-41b8-a835-86af80fecc29-umbraprivacy-com/assets/images/691b860b87da59a50eecbc1f_bg-2.avif')] bg-cover bg-center bg-no-repeat -z-10 opacity-100"></div>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
