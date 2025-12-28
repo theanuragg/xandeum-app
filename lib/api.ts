@@ -23,7 +23,7 @@ export function useDashboardStats() {
 }
 
 export function useLeaderboard(limit = 100, sortBy = 'xdnScore') {
-  return useSWR(`${API_BASE}/api/leaderbaord?limit=${limit}&sortBy=${sortBy}`, fetcher, {
+  return useSWR(`${API_BASE}/api/leaderboard?limit=${limit}&sortBy=${sortBy}`, fetcher, {
     refreshInterval: 60000, // Refresh every minute
     revalidateOnFocus: true,
   });
