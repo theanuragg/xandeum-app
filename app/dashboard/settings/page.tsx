@@ -54,7 +54,7 @@ const SettingItem = ({
 }) => (
   <div className="flex items-center justify-between py-3">
     <div className="flex-1">
-      <label className="text-sm font-medium text-white">{label}</label>
+      <label className="text-sm font-sans text-white">{label}</label>
       {description && (
         <p className="text-sm text-gray-400 mt-1">{description}</p>
       )}
@@ -413,7 +413,7 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
             <div>
-              <h4 className="text-white font-medium">Reset Dashboard</h4>
+              <h4 className="text-white font-sans">Reset Dashboard</h4>
               <p className="text-sm text-gray-400">Reset all customizations to default settings</p>
             </div>
             <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
@@ -423,7 +423,7 @@ export default function SettingsPage() {
 
           <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
             <div>
-              <h4 className="text-white font-medium">Delete Account</h4>
+              <h4 className="text-white font-sans">Delete Account</h4>
               <p className="text-sm text-gray-400">Permanently delete your account and all data</p>
             </div>
             <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">

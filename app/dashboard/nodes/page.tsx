@@ -87,7 +87,7 @@ const PNodeStats = ({ leaderboardData, statsData }: { leaderboardData: any, stat
             </div>
             <div className="mt-4">
               <span className="text-[11px] text-[#9b9b9b]">
-                Network Health: <span className="text-[#00ffd5] font-medium ml-1">{networkHealth.toFixed(1)}%</span>
+                Network Health: <span className="text-[#00ffd5] font-sans ml-1">{networkHealth.toFixed(1)}%</span>
               </span>
               <Info size={11} className="inline-block ml-1 text-[#6b6b6b]" />
             </div>
@@ -110,7 +110,7 @@ const PNodeStats = ({ leaderboardData, statsData }: { leaderboardData: any, stat
             </div>
             <div className="mt-4">
               <span className="text-[11px] text-[#9b9b9b]">
-                XDN Score Range: <span className="text-[#ffffff] font-medium ml-1">0 - ∞</span>
+                XDN Score Range: <span className="text-[#ffffff] font-sans ml-1">0 - ∞</span>
               </span>
             </div>
           </div>
@@ -132,7 +132,7 @@ const PNodeStats = ({ leaderboardData, statsData }: { leaderboardData: any, stat
             </div>
             <div className="mt-4">
               <span className="text-[11px] text-[#9b9b9b]">
-                Active Nodes: <span className="text-[#00ffd5] font-medium ml-1">{statsData?.activeNodes || 0}</span>
+                Active Nodes: <span className="text-[#00ffd5] font-sans ml-1">{statsData?.activeNodes || 0}</span>
               </span>
             </div>
           </div>
@@ -225,7 +225,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.inactive;
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-sans ${config.color}`}>
       <span className="w-1.5 h-1.5 mr-1.5 bg-current rounded-full"></span>
       {config.label}
     </span>
@@ -375,8 +375,8 @@ export default function NodesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">PNodes</h1>
-          <p className="text-gray-800 mt-2">Monitor and compare PNode storage, performance, and network health</p>
+          <h1 className="text-3xl font-sans text-gray-900">PNodes</h1>
+          <p className="text-gray-800 font-sans mt-2">Monitor and compare PNode storage, performance, and network health</p>
         </div>
         <div className="mb-6">
           <div className="relative max-w-md">
@@ -511,7 +511,7 @@ export default function NodesPage() {
                           <div className="flex flex-col overflow-hidden">
                             <Link
                               href={`/dashboard/node/${node.address}`}
-                              className="text-[#00ffd5] font-medium hover:underline truncate"
+                              className="text-[#00ffd5] font-sans hover:underline truncate"
                             >
                               {node.name}
                             </Link>
@@ -536,12 +536,12 @@ export default function NodesPage() {
                               style={{ width: `${Math.min(node.cumulativeStorageValue, 100)}%` }}
                             />
                           </div>
-                          <span className="text-[13px] font-medium text-white">{node.cumulativeStorage}</span>
+                          <span className="text-[13px] font-sans text-white">{node.cumulativeStorage}</span>
                         </div>
                       </td>
                       <td className="py-4 px-4 text-right">
                         <div className="flex flex-col">
-                          <span className="font-medium text-white">{node.performance}</span>
+                          <span className="font-sans text-white">{node.performance}</span>
                           <span className="text-[11px] text-[#6b6b6b]">{node.uptime} uptime</span>
                         </div>
                       </td>

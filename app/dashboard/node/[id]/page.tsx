@@ -50,7 +50,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.inactive;
 
   return (
-    <span className={cn("inline-flex items-center px-3 py-1 rounded-full text-sm font-medium", config.color, config.text)}>
+    <span className={cn("inline-flex items-center px-3 py-1 rounded-full text-sm font-sans", config.color, config.text)}>
       <span className="w-2 h-2 mr-2 bg-current rounded-full"></span>
       {config.label}
     </span>
@@ -73,7 +73,7 @@ const MetricCard = ({
   <div className="bg-white border border-gray-200 rounded-lg p-4">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-sm font-medium text-gray-600">{title}</p>
+        <p className="text-sm font-sans text-gray-600">{title}</p>
         <p className="text-2xl font-bold text-gray-900">{value}</p>
         {trend && (
           <p className="text-sm text-green-600 mt-1">{trend}</p>
@@ -365,7 +365,7 @@ const PNodeCharts = ({ node }: { node: any }) => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+              className={`px-3 py-2 text-sm font-sans rounded-md transition-colors whitespace-nowrap ${
                 isActive
                   ? "bg-[#00ffd5] text-[#121212]"
                   : "text-[#929292] hover:bg-[#2e2e2e] hover:text-white"
@@ -512,7 +512,7 @@ export default function NodeDetailPage() {
           </div>
           <div className="text-center py-12">
             <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load node data</h3>
+            <h3 className="text-lg font-sans text-gray-900 mb-2">Failed to load node data</h3>
             <p className="text-gray-600">Please try again later or check if the node exists.</p>
           </div>
         </div>
@@ -535,7 +535,7 @@ export default function NodeDetailPage() {
               <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-[12px] p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#929292]">CPU Usage</p>
+                    <p className="text-sm font-sans text-[#929292]">CPU Usage</p>
                     <p className="text-2xl font-bold text-white">{node.cpuPercent?.toFixed(1) || 0}%</p>
                   </div>
                   <div className="p-3 rounded-lg bg-[#2e2e2e]">
@@ -547,7 +547,7 @@ export default function NodeDetailPage() {
               <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-[12px] p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#929292]">Memory Usage</p>
+                    <p className="text-sm font-sans text-[#929292]">Memory Usage</p>
                     <p className="text-2xl font-bold text-white">
                       {node.memoryTotal ? `${((parseInt(node.memoryUsed) / parseInt(node.memoryTotal)) * 100).toFixed(1)}%` : '0%'}
                     </p>
@@ -561,7 +561,7 @@ export default function NodeDetailPage() {
               <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-[12px] p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#929292]">Network I/O</p>
+                    <p className="text-sm font-sans text-[#929292]">Network I/O</p>
                     <p className="text-2xl font-bold text-white">
                       {node.packetsIn || 0} / {node.packetsOut || 0}
                     </p>
@@ -576,7 +576,7 @@ export default function NodeDetailPage() {
               <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-[12px] p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#929292]">Risk Score</p>
+                    <p className="text-sm font-sans text-[#929292]">Risk Score</p>
                     <p className="text-2xl font-bold text-white">{node.riskScore?.toFixed(1) || 0}</p>
                     <p className="text-xs text-[#6b6b6b]">
                       {node.riskScore < 0 ? 'Low Risk' : node.riskScore < 50 ? 'Medium Risk' : 'High Risk'}

@@ -264,7 +264,7 @@ export default function DocsPage() {
                   <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg p-4">
                     <div className="flex items-center mb-3">
                       <Eye className="h-5 w-5 sm:h-6 sm:w-6 text-white mr-3 flex-shrink-0" />
-                      <span className="font-medium text-white text-sm sm:text-base">Real-time Monitoring</span>
+                      <span className="font-sans text-white text-sm sm:text-base">Real-time Monitoring</span>
                     </div>
                     <p className="text-sm text-neutral-400">
                       Sub-second latency monitoring across all PNodes with predictive anomaly detection
@@ -274,7 +274,7 @@ export default function DocsPage() {
                   <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg p-4">
                     <div className="flex items-center mb-3">
                       <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-white mr-3 flex-shrink-0" />
-                      <span className="font-medium text-white text-sm sm:text-base">Advanced Analytics</span>
+                      <span className="font-sans text-white text-sm sm:text-base">Advanced Analytics</span>
                     </div>
                     <p className="text-sm text-neutral-400">
                       Multi-dimensional performance analysis with XDN scoring algorithms,
@@ -284,7 +284,7 @@ export default function DocsPage() {
                   <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg p-4 sm:col-span-2 lg:col-span-1">
                     <div className="flex items-center mb-3">
                       <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-white mr-3 flex-shrink-0" />
-                      <span className="font-medium text-white text-sm sm:text-base">Intelligent Alerting</span>
+                      <span className="font-sans text-white text-sm sm:text-base">Intelligent Alerting</span>
                     </div>
                     <p className="text-sm text-neutral-400">
                       ML-powered anomaly detection with severity-based notifications,

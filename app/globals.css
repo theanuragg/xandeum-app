@@ -46,7 +46,7 @@ body {
 
 /* Table styles */
 .table-header {
-  @apply text-[#9b9b9b] font-medium text-sm uppercase tracking-wider;
+  @apply text-[#9b9b9b] font-sans text-sm uppercase tracking-wider;
 }
 
 .card-shadow {

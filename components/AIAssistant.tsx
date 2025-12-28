@@ -331,7 +331,7 @@ export default function AIAssistant() {
                       href="https://aistudio.google.com/app/apikey"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#00ffd5] hover:bg-[#00e6c0] text-[#121212] px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+                      className="bg-[#00ffd5] hover:bg-[#00e6c0] text-[#121212] px-4 py-2 rounded-lg text-sm font-sans transition-colors text-center"
                     >
                       Upgrade Gemini API Plan
                     </a>
