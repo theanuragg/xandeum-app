@@ -17,7 +17,7 @@ export class CacheService {
 
       const cached:  CachedValue<T> = JSON.parse(value);
       return cached.data;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Cache get error (Redis unavailable), skipping cache:', error.message);
       return null;
     }
@@ -33,8 +33,8 @@ export class CacheService {
 
       const ttl = ttlSeconds || 300;
       await redis.setEx(key, ttl, JSON. stringify(cached));
-    } catch (error) {
-      console.warn('Cache set error (Redis unavailable), skipping cache:', error.message);
+    } catch (error: any) {
+      console.warn('Cache set error (Redis unavailable), skipping cache:', error.message );
     }
   }
 
