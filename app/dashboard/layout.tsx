@@ -22,9 +22,10 @@ import {
   BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import AIAssistant from '@/components/AIAssistant';
 
 const navigation = [
-  { name: 'Validators', href: '/dashboard/nodes', icon: List },
+  { name: 'Pnodes', href: '/dashboard/nodes', icon: List },
   { name: 'Docs', href: '/docs', icon: BookOpen },
 ];
 
@@ -37,13 +38,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen ">
       {/* Header */}
-      <header className="bg-black shadow-sm border-b border-gray-200">
+      <header className=" shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-100">Xandeum</h1>
+              <h1 className="text-xl font-semibold text-gray-100">
+                <Link href="/dashboard/nodes"></Link>Xandeum</h1>
+
             </div>
 
             <nav className="hidden md:flex space-x-8">
@@ -54,11 +57,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                      isActive
-                        ? 'text-blue-600 bg-gray-800'
-                        : 'text-gray-100 '
-                    }`}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors `}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.name}
@@ -80,7 +79,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Mobile Navigation */}
         {sidebarOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-900 border-t border-gray-200">
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
               {navigation.map((item) => {
                 const isActive = pathname === item.href ||
                   (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -88,11 +87,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                      isActive
-                        ? 'text-blue-600 bg-gray-800'
-                        : 'text-gray-100'
-                    }`}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors `}
                     onClick={() => setSidebarOpen(false)}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
@@ -109,6 +104,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <main>
         {children}
       </main>
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
