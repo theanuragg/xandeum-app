@@ -241,7 +241,7 @@ Network Health = (Active Nodes Ratio × 80) + (Latency Score × 20)
 Where Latency Score = max(0, 100 - Average Latency)
 ```
 
-#### **5. Leaderboard API** (`GET /api/leaderbaord`)
+#### **5. Leaderboard API** (`GET /api/leaderboard`)
 **Purpose**: Competitive ranking system for network participants
 ```typescript
 Query Parameters:
@@ -408,12 +408,35 @@ pnpm install
 # Configure environment
 cp .env.example .env.local
 
+# Set up AI Assistant (optional but recommended)
+# 1. Get free Gemini API key: https://aistudio.google.com/app/apikey
+# 2. Add to .env.local: GEMINI_API_KEY=your_api_key_here
+
 # Database setup
 npx prisma migrate dev
 npx prisma generate
 
 # Start development server
 pnpm dev
+```
+
+#### AI Assistant Setup
+The platform includes an integrated AI assistant powered by Google Gemini that can help with:
+- Xandeum Protocol questions
+- Network analytics and performance insights
+- Technical architecture guidance
+- API usage and integration help
+
+**To enable the AI assistant:**
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Create a free API key
+3. Add `GEMINI_API_KEY=your_api_key_here` to your `.env.local` file
+4. Restart the development server
+
+**Testing AI setup:**
+```bash
+# Run the AI configuration test
+node test-ai.js
 ```
 
 ### Environment Configuration
