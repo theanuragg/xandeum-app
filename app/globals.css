@@ -44,6 +44,15 @@ body {
   line-height: 1.6;
 }
 
+/* Table styles */
+.table-header {
+  @apply text-[#9b9b9b] font-medium text-sm uppercase tracking-wider;
+}
+
+.card-shadow {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
