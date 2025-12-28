@@ -168,7 +168,7 @@ const PNodeHero = ({ node, searchTerm, onSearchChange }: { node: any, searchTerm
       <div className="container mx-auto max-w-[1200px] px-4">
         {/* Header Row: Title and Search */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-[24px] font-semibold text-white">PNode Details</h1>
+          <h1 className="text-[24px] font-sans text-black">PNode Details</h1>
 
           <div className="relative w-full md:w-[600px]">
             <input
@@ -191,13 +191,9 @@ const PNodeHero = ({ node, searchTerm, onSearchChange }: { node: any, searchTerm
               {/* Avatar and Main Info Container */}
               <div className="flex-shrink-0">
                 <div className="bg-[#2e2e2e] rounded-[12px] p-2">
-                  <Image
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(node.id)}`}
-                    alt="PNode avatar"
-                    width={89}
-                    height={89}
-                    className="rounded-[8px]"
-                  />
+                  <div className="w-[89px] h-[89px] bg-[#00ffd5] rounded-[8px] flex items-center justify-center text-[#2a2a2a] font-bold text-xl">
+                    {node?.name?.charAt(0).toUpperCase() || node?.externalId?.charAt(0).toUpperCase() || 'N'}
+                  </div>
                 </div>
               </div>
 
@@ -314,50 +310,66 @@ const PNodeCharts = ({ node }: { node: any }) => {
   }
 
   // Generate mock historical data based on current values
+  const getSafeNumber = (value: any, defaultValue: number = 0): number => {
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value.replace(/,/g, ''));
+      return isNaN(parsed) ? defaultValue : parsed;
+    }
+    return typeof value === 'number' && !isNaN(value) ? value : defaultValue;
+  };
+
+  const performance = getSafeNumber(node.performance, 100000);
+  const storageUsed = getSafeNumber(node.storageUsed, 50000);
+  const xdnScore = getSafeNumber(node.xdnScore, 100000);
+  const uptime = getSafeNumber(node.uptime, 95);
+  const latency = getSafeNumber(node.latency, 50);
+
   const mockDataMap: Record<string, any[]> = {
     Performance: Array.from({ length: 20 }, (_, i) => ({
-      name: `Day ${i + 1}`,
-      value: (node.performance || 0) + (Math.random() - 0.5) * (node.performance || 1000) * 0.1,
+      name: `${i + 1}h ago`,
+      value: Math.max(0, performance + (Math.random() - 0.5) * performance * 0.2),
     })),
     "Storage Usage": Array.from({ length: 20 }, (_, i) => ({
-      name: `Day ${i + 1}`,
-      value: (parseInt(node.storageUsed) || 0) + (Math.random() - 0.5) * (parseInt(node.storageUsed) || 1000) * 0.1,
+      name: `${i + 1}h ago`,
+      value: Math.max(0, storageUsed + (Math.random() - 0.5) * storageUsed * 0.1),
     })),
     "XDN Score": Array.from({ length: 20 }, (_, i) => ({
-      name: `Day ${i + 1}`,
-      value: (node.xdnScore || 0) + (Math.random() - 0.5) * (node.xdnScore || 1000) * 0.1,
+      name: `${i + 1}h ago`,
+      value: Math.max(0, xdnScore + (Math.random() - 0.5) * xdnScore * 0.15),
     })),
     Uptime: Array.from({ length: 20 }, (_, i) => ({
-      name: `Day ${i + 1}`,
-      value: (node.uptime / 100 || 0) + (Math.random() - 0.5) * 5,
+      name: `${i + 1}h ago`,
+      value: Math.max(0, Math.min(100, uptime + (Math.random() - 0.5) * 10)),
     })),
     Latency: Array.from({ length: 20 }, (_, i) => ({
-      name: `Day ${i + 1}`,
-      value: Math.max(0, (node.latency || 0) + (Math.random() - 0.5) * 50),
+      name: `${i + 1}h ago`,
+      value: Math.max(0, latency + (Math.random() - 0.5) * latency * 0.3),
     })),
   };
 
   const tabs = ["Performance", "Storage Usage", "XDN Score", "Uptime", "Latency"];
-  const activeData = mockDataMap[activeTab];
+  const activeData = mockDataMap[activeTab] || [];
+
+  // Ensure data is valid
+  const validData = activeData.filter(item =>
+    item && typeof item.value === 'number' && !isNaN(item.value)
+  );
 
   return (
-    <div className="sc-kbousE kXnopE mt-auto">
+    <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg p-4">
       {/* Tabs Section */}
-      <div className="d-flex overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex overflow-x-auto pb-2 space-x-1 scrollbar-hide">
         {tabs.map((tab) => {
           const isActive = activeTab === tab;
           return (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`sc-gfoqjT ${
-                isActive ? "leGzEA bg-[#00ffd5] text-[#121212]" : "gEjyBr text-[#929292]"
-              } px-4 py-2 mr-0 text-sm font-semibold transition-colors duration-200 border-none rounded-md cursor-pointer whitespace-nowrap`}
-              style={{
-                backgroundColor: isActive ? "#00ffd5" : "transparent",
-                color: isActive ? "#121212" : "#929292",
-                minWidth: "fit-content",
-              }}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                isActive
+                  ? "bg-[#00ffd5] text-[#121212]"
+                  : "text-[#929292] hover:bg-[#2e2e2e] hover:text-white"
+              }`}
             >
               {tab}
             </button>
@@ -367,11 +379,12 @@ const PNodeCharts = ({ node }: { node: any }) => {
 
       {/* Chart Container */}
       <div className="mt-4" style={{ height: "200px", width: "100%" }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={activeData}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-          >
+        {validData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={validData}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#00ffd5" stopOpacity={0.2} />
@@ -418,6 +431,11 @@ const PNodeCharts = ({ node }: { node: any }) => {
             />
           </AreaChart>
         </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-full text-[#929292] text-sm">
+            No chart data available
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
@@ -482,11 +500,11 @@ export default function NodeDetailPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center space-x-4 mb-8">
             <Link
-              href="/dashboard"
+              href="/dashboard/nodes"
               className="p-2 bg-gray-200 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -503,7 +521,7 @@ export default function NodeDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen ">
       <PNodeHero node={node} searchTerm="" onSearchChange={() => {}} />
       <div className="container mx-auto max-w-[1200px] px-4 mt-8">
         <PNodeCharts node={node} />

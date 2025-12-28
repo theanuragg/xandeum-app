@@ -233,6 +233,15 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const NodeAvatar = ({ name, avatar }: { name: string; avatar: string }) => {
+  // If no avatar provided, show fallback with first letter
+  if (!avatar || avatar.trim() === '') {
+    return (
+      <div className="w-full h-full bg-[#00ffd5] flex items-center justify-center text-[#2a2a2a] font-bold text-sm">
+        {name.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+
   const [imageError, setImageError] = useState(false);
 
   if (imageError) {
@@ -269,7 +278,7 @@ export default function NodesPage() {
     const transformed = leaderboardData.leaderboard.map((node: any, index: number) => ({
       ...node,
       rank: index + 1,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(node.id)}`,
+      avatar: '', // Remove DiceBear avatar usage
       version: node.version || 'Unknown',
       address: node.id,
       storageUsed: node.storageUsed ? `${(parseInt(node.storageUsed) / (1024**3)).toFixed(2)} GB` : '0 GB',
@@ -362,12 +371,12 @@ export default function NodesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-100">PNodes</h1>
-          <p className="text-gray-600 mt-2">Monitor and compare PNode storage, performance, and network health</p>
+          <h1 className="text-3xl font-bold text-gray-900">PNodes</h1>
+          <p className="text-gray-800 mt-2">Monitor and compare PNode storage, performance, and network health</p>
         </div>
         <div className="mb-6">
           <div className="relative max-w-md">
@@ -376,7 +385,7 @@ export default function NodesPage() {
               placeholder="Search PNodes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 mb-6 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 mb-6 border border-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>

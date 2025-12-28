@@ -24,6 +24,7 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import AIAssistant from '@/components/AIAssistant';
 
 const sections = [
   { id: 'overview', title: 'Xandeum PNode Network', icon: BookOpen },
@@ -114,12 +115,10 @@ export default function DocsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full relative">
-      {/* Background Image */}
-      <div className="fixed inset-0 bg-[url('/hero.svg')] bg-cover bg-center bg-no-repeat -z-10"></div>
+    <div className="min-h-screen ">
 
       {/* Header */}
-      <header className="bg-[#1e1e1e] border-b border-[#2e2e2e]">
+      <header className="border-b border-[#2e2e2e]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
@@ -191,7 +190,7 @@ export default function DocsPage() {
 
           {/* Desktop Sidebar */}
           <div className="hidden md:block w-64 flex-shrink-0">
-            <div className="bg-[#1e1e1e] rounded-lg border border-[#2e2e2e] p-4 sticky top-8">
+            <div className="rounded-lg border border-[#2e2e2e] p-4 sticky top-8">
               <h2 className="text-lg font-semibold text-white mb-4">Contents</h2>
               <nav className="space-y-2">
                 {sections.map((section) => {
@@ -593,6 +592,9 @@ export default function DocsPage() {
           </div>
         </div>
       </div>
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
