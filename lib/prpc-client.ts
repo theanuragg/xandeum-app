@@ -1,6 +1,5 @@
 import { PNode, Prisma } from '@/app/generated/prisma/client';
 import { PrpcClient, Pod, PodsResponse, NodeStats } from 'xandeum-prpc';
-import { getGeolocation } from './geolocation';
 
 // Map Xandeum Pod data to our internal format
 interface PRPCPNodeData {
@@ -240,27 +239,15 @@ export class PRPCClient {
           storageCapacity: pod.storage_committed || pod.storage_used || 0,
         };
 
-        // Get geolocation
-        let geolocation = null;
-        try {
-          if (pod.address) {
-            geolocation = await getGeolocation(pod.address);
-          }
-        } catch (error) {
-          // Geolocation is optional, will fallback to Unknown
-        }
-
-        // Provide fallback location data if geolocation failed
-        if (!geolocation || geolocation.country === 'Unknown') {
-          geolocation = {
-            country: 'Unknown',
-            region: 'Unknown',
-            city: 'Unknown',
-            latitude: 0,
-            longitude: 0,
-            timezone: 'UTC'
-          };
-        }
+        // Provide default location data
+        const geolocation = {
+          country: 'Unknown',
+          region: 'Unknown',
+          city: 'Unknown',
+          latitude: 0,
+          longitude: 0,
+          timezone: 'UTC'
+        };
         
         const riskScore = this.calculateRiskScore(nodeData);
         const xdnScore = calculateXDNScore(
@@ -321,6 +308,15 @@ export class PRPCClient {
       console.error('❌ Critical error in getPNodes:', error);
       return [];
     }
+  }
+
+  /**
+   * Refresh geolocation data for nodes asynchronously
+   * Geolocation fetching is disabled to avoid rate limits
+   */
+  async refreshGeolocations(nodes: PNode[]): Promise<void> {
+    // Geolocation fetching is disabled to prevent rate limiting issues
+    console.log('📍 Geolocation refresh is disabled');
   }
 
   /**
